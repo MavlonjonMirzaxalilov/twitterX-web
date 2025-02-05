@@ -1,12 +1,29 @@
+"use client";
+import useRegisterModal from "@/hooks/useRegisterModal";
 import Image from "next/image";
-import React from "react";
-import Button from "../ui/button";
-import { FcGoogle } from "react-icons/fc";
+import { useCallback } from "react";
 import { AiFillGithub } from "react-icons/ai";
+import { FcGoogle } from "react-icons/fc";
+import Button from "../ui/button";
+import RegisterModal from "./modals/register-modal";
+import LoginModal from './modals/login-modal'
+import useLoginModal from '@/hooks/useLoginModal'
 
 export default function Auth() {
+  const registerModal = useRegisterModal();
+  const loginModal = useLoginModal();
+
+  const onOpenRegisterModal = useCallback(() => {
+    registerModal.onOpen();
+  }, [registerModal]);
+
+  const onOpenLoginModal = useCallback(() => {
+    loginModal.onOpen();
+  }, [loginModal]);
   return (
     <>
+      <RegisterModal />
+      <LoginModal/>
       <div className="grid h-screen grid-cols-1 items-center gap-10 md:grid-cols-2">
         <Image
           src={"/images/x.svg"}
@@ -20,7 +37,9 @@ export default function Auth() {
           <div className="block md:hidden">
             <Image src={"/images/x.svg"} alt="X" width={50} height={50} />
           </div>
-          <h1 className="text-6xl font-bold">Happening Now</h1>
+          <h1 className="text-6xl font-bold">
+            In the know about what&apos;s going on
+          </h1>
           <div className="w-full md:w-[60%]">
             <h2 className="mb-4 text-3xl font-bold">Join today.</h2>
             <div className="flex flex-col space-y-2">
@@ -49,7 +68,11 @@ export default function Auth() {
                 <p className="mx-4">or</p>
                 <div className="h-px w-1/2 bg-gray-700" />
               </div>
-              <Button label={"Create account"} fullWidth />
+              <Button
+                label={"Register"}
+                fullWidth
+                onclick={onOpenRegisterModal}
+              />
               <div className="text-[10px] text-gray-400">
                 By signing up, you agree to the {""}
                 <span className="text-sky-500">Terms of Service</span> and
@@ -59,10 +82,8 @@ export default function Auth() {
             </div>
           </div>
           <div className="w-full md:w-[60%]">
-            <h3 className="mb-4 text-xl font-medium">
-              Already have an account?
-            </h3>
-            <Button label={"Sign in"} fullWidth outline />
+            <h3 className="mb-4 text-xl font-medium">Already registered?</h3>
+            <Button label={"Login"} fullWidth outline onclick={onOpenLoginModal}/>
           </div>
         </div>
       </div>
