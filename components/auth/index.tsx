@@ -1,17 +1,22 @@
 "use client";
+import useLoginModal from "@/hooks/useLoginModal";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import Image from "next/image";
 import { useCallback } from "react";
 import { AiFillGithub } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import Button from "../ui/button";
+import LoginModal from "./modals/login-modal";
 import RegisterModal from "./modals/register-modal";
-import LoginModal from './modals/login-modal'
-import useLoginModal from '@/hooks/useLoginModal'
+import { signIn, useSession } from "next-auth/react";
 
 export default function Auth() {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
+
+  const {data} = useSession()
+  console.log(data);
+  
 
   const onOpenRegisterModal = useCallback(() => {
     registerModal.onOpen();
@@ -23,7 +28,7 @@ export default function Auth() {
   return (
     <>
       <RegisterModal />
-      <LoginModal/>
+      <LoginModal />
       <div className="grid h-screen grid-cols-1 items-center gap-10 md:grid-cols-2">
         <Image
           src={"/images/x.svg"}
@@ -44,6 +49,7 @@ export default function Auth() {
             <h2 className="mb-4 text-3xl font-bold">Join today.</h2>
             <div className="flex flex-col space-y-2">
               <Button
+              onclick={()=>signIn("google")}
                 label={
                   <div className="flex items-center justify-center gap-2">
                     <FcGoogle />
@@ -54,8 +60,12 @@ export default function Auth() {
                 secondary
               />
               <Button
+               onclick={() => signIn("github")}
                 label={
-                  <div className="flex items-center justify-center gap-2">
+                  <div
+                    className="flex items-center justify-center gap-2"
+                   
+                  >
                     <AiFillGithub />
                     Sign up with Github
                   </div>
@@ -83,7 +93,12 @@ export default function Auth() {
           </div>
           <div className="w-full md:w-[60%]">
             <h3 className="mb-4 text-xl font-medium">Already registered?</h3>
-            <Button label={"Login"} fullWidth outline onclick={onOpenLoginModal}/>
+            <Button
+              label={"Login"}
+              fullWidth
+              outline
+              onclick={onOpenLoginModal}
+            />
           </div>
         </div>
       </div>
