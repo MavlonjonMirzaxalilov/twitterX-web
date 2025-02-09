@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import Modal from "../../ui/modal";
@@ -19,6 +20,7 @@ import Button from "@/components/ui/button";
 import useLoginModal from "@/hooks/useLoginModal";
 import axios from "axios";
 import { AlertCircle } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function RegisterModal() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -168,6 +170,7 @@ function RegisterStep2({ data }: { data: { name: string; email: string } }) {
         ...values,
       });
       if (response.success) {
+        signIn("credentials", { email: data.email, password: values.password });
         registerModal.onClose();
       }
     } catch (error: any) {
@@ -196,7 +199,7 @@ function RegisterStep2({ data }: { data: { name: string; email: string } }) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Username" {...field} />
+                <Input placeholder="Username" type="text" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -209,7 +212,7 @@ function RegisterStep2({ data }: { data: { name: string; email: string } }) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Password" {...field} />
+                <Input placeholder="Password" type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

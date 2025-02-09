@@ -1,11 +1,28 @@
-import { AuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDatabse } from "./mongoose";
+import { AuthOptions } from "next-auth";
 import User from "@/database/user.model";
 
 export const authOptions: AuthOptions = {
   providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        await connectToDatabse();
+        //   if (!session.user) return session;
+        const user = await User.findOne({
+          email: credentials?.email,
+        });
+
+        return user;
+      },
+    }),
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
@@ -16,6 +33,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session }: any) {
       await connectToDatabse();
       //   if (!session.user) return session;

@@ -16,8 +16,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/validation";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import axios from "axios";
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircle } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { signIn } from 'next-auth/react'
 export default function LoginModal() {
   const [error, setError] = useState("");
   const loginModal = useLoginModal();
@@ -40,8 +41,11 @@ export default function LoginModal() {
     try {
       const { data } = await axios.post("/api/auth/login", values);
       if (data.success) {
+        signIn("credentials", { email: data.email, password: values.password });
+
         loginModal.onClose();
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.response.data.error) {
         setError(error.response.data.error);
@@ -56,7 +60,7 @@ export default function LoginModal() {
   const bodyContent = (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-12">
-      {error && (
+        {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
@@ -82,7 +86,7 @@ export default function LoginModal() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Password" {...field} />
+                <Input placeholder="Password" type='password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
